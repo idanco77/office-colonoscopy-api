@@ -1,6 +1,8 @@
 <?php
 
 use App\Http\Controllers\GameLinkController;
+use App\Http\Middleware\Authenticate;
+use App\Http\Middleware\AuthMiddleware;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -14,5 +16,10 @@ use Illuminate\Support\Facades\Route;
 | is assigned the "api" middleware group. Enjoy building your API!
 |
 */
+Route::get('gameLink', [GameLinkController::class, 'index']);
+Route::post('auth/login', [GameLinkController::class, 'login']);
 
-Route::resource('gameLink', GameLinkController::class);
+Route::resource('gameLink', GameLinkController::class)
+    ->except(['index'])
+    ->middleware(AuthMiddleware::class);
+

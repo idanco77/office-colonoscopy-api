@@ -2,82 +2,69 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Resources\GameLinkResource;
+use App\Http\Requests\GameLinkRequest;
 use App\Models\GameLink;
+use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
+use Illuminate\Support\Str;
 
 class GameLinkController extends Controller
 {
     public function index(): JsonResponse
     {
-        return response()->json(GameLinkResource::collection(GameLink::all()));
+        return response()->json(GameLink::all()->groupBy('category'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
+    public function store(GameLinkRequest $request): JsonResponse
     {
-        //
+        $isSaved = GameLink::saveInstance(collect($request->validated()));
+        if (!$isSaved) {
+            return response()->json(['message' => 'Bad Request'], 403);
+        }
+        return response()->json(['message' => 'Success'], 200);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request)
-    {
-        //
-    }
-
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
     public function show($id)
     {
         //
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
+    public function update(GameLinkRequest $request, GameLink $gameLink): JsonResponse
     {
-        //
+        $isUpdated = $gameLink->updateInstance(collect($request->validated()));
+        if (!$isUpdated) {
+            return response()->json(['message' => 'Bad Request'], 403);
+        }
+        return response()->json(['message' => 'Success'], 200);
     }
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, $id)
+    public function destroy(GameLink $gameLink): JsonResponse
     {
-        //
+        if (! $gameLink->delete()) {
+            return response()->json(['message' => 'Bad Request'], 403);
+        }
+
+        return response()->json(['message' => 'Success'], 200);
     }
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy($id)
+    public function login(Request $request): JsonResponse
     {
-        //
+        auth()->attempt([
+            'user_name' => $request->userName,
+            'password' => $request->password
+        ]);
+        $user = auth()->user();
+        if (! $user) {
+            return response()->json('Bad Request', 403);
+        }
+        $user->token = Str::random(64);
+        $user->token_expiration_at = now()->addHour();
+        $user->save();
+
+        return response()->json([
+            'token' => $user->token,
+            'tokenExpirationAt' => Carbon::parse($user->token_expiration_at)->timestamp,
+        ], 200);
     }
 }

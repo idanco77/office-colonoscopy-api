@@ -16,6 +16,11 @@ class GameLinkSeeder extends Seeder
                 'category' => 'geo',
             ],
             [
+                'name' => 'where taken usa',
+                'link' => 'https://wheretakenusa.teuteuf.fr/',
+                'category' => 'geo',
+            ],
+            [
                 'name' => '5 אותיות | וורדעל בעברית ✔️',
                 'link' => 'https://www.haaretz.co.il/riddles/ty-page/haaretz-wordle',
                 'category' => 'word',
