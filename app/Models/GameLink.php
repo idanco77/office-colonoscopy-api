@@ -20,6 +20,15 @@ class GameLink extends Model
         return $model->save();
     }
 
+    public static function increaseByCategory(string $category): void
+    {
+        $gameLinks = self::query()->where('category', $category)->get();
+        foreach ($gameLinks as $gameLink) {
+            $gameLink->click_count = ++$gameLink->click_count;
+            $gameLink->save();
+        }
+    }
+
     public function updateInstance(Collection $gameLink): bool
     {
         $this->name = $gameLink->get('name');

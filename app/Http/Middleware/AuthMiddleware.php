@@ -13,14 +13,14 @@ class AuthMiddleware
     {
         $admin = User::query()->first();
         if (! $admin) {
-            return null;
+            abort(403, 'Access denied');
         }
         if ($request->header('Authorization') !== $admin->token) {
-            return null;
+            abort(403, 'Access denied');
         }
 
         if (Carbon::parse($admin->token_expiration_at)->isBefore(now())) {
-            return null;
+            abort(403, 'Access denied');
         }
 
         return $next($request);

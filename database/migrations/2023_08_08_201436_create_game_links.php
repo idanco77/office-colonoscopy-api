@@ -13,6 +13,7 @@ class CreateGameLinks extends Migration
             $table->string('name');
             $table->string('link');
             $table->enum('category', ['geo', 'word', 'movies']);
+            $table->integer('click_count')->default(0)->unsigned();
             $table->timestamp('created_at')->useCurrent();
             $table->timestamp('updated_at')->useCurrent();
         });

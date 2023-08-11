@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\GameLinkRequest;
+use App\Http\Requests\IncreaseLinkByCategoryRequest;
 use App\Models\GameLink;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
@@ -13,7 +14,12 @@ class GameLinkController extends Controller
 {
     public function index(): JsonResponse
     {
-        return response()->json(GameLink::all()->groupBy('category'));
+        return response()->json(
+            GameLink::query()
+                ->select('name', 'category', 'link', 'click_count as clickCount', 'id')
+                ->get()
+                ->groupBy('category')
+        );
     }
 
     public function store(GameLinkRequest $request): JsonResponse
@@ -23,11 +29,6 @@ class GameLinkController extends Controller
             return response()->json(['message' => 'Bad Request'], 403);
         }
         return response()->json(['message' => 'Success'], 200);
-    }
-
-    public function show($id)
-    {
-        //
     }
 
     public function update(GameLinkRequest $request, GameLink $gameLink): JsonResponse
@@ -66,5 +67,18 @@ class GameLinkController extends Controller
             'token' => $user->token,
             'tokenExpirationAt' => Carbon::parse($user->token_expiration_at)->timestamp,
         ], 200);
+    }
+
+    public function increaseClickCount(GameLink $gameLink): JsonResponse
+    {
+        $gameLink->click_count = ++$gameLink->click_count;
+        $gameLink->save();
+        return response()->json(['message' => 'success'], 200);
+    }
+
+    public function increaseClickCountByCategory(IncreaseLinkByCategoryRequest $request): JsonResponse
+    {
+        GameLink::increaseByCategory($request->category);
+        return response()->json(['message' => 'success'], 200);
     }
 }
