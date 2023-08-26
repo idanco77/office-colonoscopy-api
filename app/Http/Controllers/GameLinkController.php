@@ -16,7 +16,7 @@ class GameLinkController extends Controller
     {
         return response()->json(
             GameLink::query()
-                ->select('name', 'category', 'link', 'click_count as clickCount', 'id')
+                ->select('name', 'category', 'link', 'description', 'sub_category as subCategory', 'click_count as clickCount', 'id')
                 ->get()
                 ->groupBy('category')
         );
@@ -28,7 +28,7 @@ class GameLinkController extends Controller
         if (!$isSaved) {
             return response()->json(['message' => 'Bad Request'], 403);
         }
-        return response()->json(['message' => 'Success'], 200);
+        return response()->json(['message' => 'Success']);
     }
 
     public function update(GameLinkRequest $request, GameLink $gameLink): JsonResponse
@@ -37,7 +37,7 @@ class GameLinkController extends Controller
         if (!$isUpdated) {
             return response()->json(['message' => 'Bad Request'], 403);
         }
-        return response()->json(['message' => 'Success'], 200);
+        return response()->json(['message' => 'Success']);
     }
 
     public function destroy(GameLink $gameLink): JsonResponse
@@ -46,7 +46,7 @@ class GameLinkController extends Controller
             return response()->json(['message' => 'Bad Request'], 403);
         }
 
-        return response()->json(['message' => 'Success'], 200);
+        return response()->json(['message' => 'Success']);
     }
 
     public function login(Request $request): JsonResponse
@@ -73,12 +73,12 @@ class GameLinkController extends Controller
     {
         $gameLink->click_count = ++$gameLink->click_count;
         $gameLink->save();
-        return response()->json(['message' => 'success'], 200);
+        return response()->json(['message' => 'success']);
     }
 
     public function increaseClickCountByCategory(IncreaseLinkByCategoryRequest $request): JsonResponse
     {
-        GameLink::increaseByCategory($request->category);
-        return response()->json(['message' => 'success'], 200);
+        GameLink::increaseByCategory($request->get('category'));
+        return response()->json(['message' => 'success']);
     }
 }

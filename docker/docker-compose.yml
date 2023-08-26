@@ -8,10 +8,9 @@ services:
     build:
       context: ../
       dockerfile: docker/dev.Dockerfile
-      target: dev
     container_name: office-colonoscopy_api
     ports:
-      - 81:80
+      - "81:80"
     environment:
       XDEBUG_TRIGGER: "docker"
       GIT_MERGE_AUTOEDIT: "no" # use default git message after pull: (set no to use default message)
@@ -32,7 +31,7 @@ services:
       MYSQL_ALLOW_EMPTY_PASSWORD: 'true'
       MYSQL_ROOT_HOST: '%'
     ports:
-      - 3307:3306
+      - "3307:3306"
     volumes:
       - office-colonoscopy-db:/var/lib/mysql
     command:
@@ -44,7 +43,7 @@ services:
   phpmyadmin:
     image: phpmyadmin
     ports:
-      - 8081:80
+      - "8081:80"
     links:
       - mysql:db
     networks:

@@ -16,6 +16,7 @@ use Illuminate\Support\Facades\Route;
 | is assigned the "api" middleware group. Enjoy building your API!
 |
 */
+
 Route::get('gameLink', [GameLinkController::class, 'index']);
 Route::post('auth/login', [GameLinkController::class, 'login']);
 Route::put('gameLink/increase/{gameLink}', [GameLinkController::class, 'increaseClickCount']);
